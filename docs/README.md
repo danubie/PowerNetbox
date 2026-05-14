@@ -2,7 +2,7 @@
 
 Welcome to the **PowerNetbox** documentation.
 
-PowerNetbox is a comprehensive PowerShell module for the [Netbox](https://github.com/netbox-community/netbox) REST API with **100% coverage** of all endpoints. Fully compatible with **Netbox 4.3 - 4.5**.
+PowerNetbox is a comprehensive PowerShell module for the [Netbox](https://github.com/netbox-community/netbox) REST API with **100% coverage** of all endpoints. Fully compatible with **Netbox 4.3 - 4.6**.
 
 ## Quick Start
 
