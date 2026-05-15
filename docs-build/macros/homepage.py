@@ -17,6 +17,39 @@ _DOCS_RELEASE_DIR = _WORKTREE_ROOT / "docs" / "release-notes"
 _VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(\.\d+)?\.md$")
 _RELEASED_RE = re.compile(r"^Released (\d{4}-\d{2}-\d{2})\b")
 
+# The compat table is DERIVED, not hand-maintained. Source of truth = the CI
+# integration matrix (what is actually tested) + the module manifest.
+_INTEGRATION_YML = _WORKTREE_ROOT / ".github" / "workflows" / "integration.yml"
+_MATRIX_NETBOX_RE = re.compile(r'^\s*netbox_short:\s*"?([\d.]+)"?\s*$', re.MULTILINE)
+_PSD1_VERSION_RE = re.compile(r"ModuleVersion\s*=\s*'([\d.]+)'")
+_PSD1_PSVER_RE = re.compile(r"PowerShellVersion\s*=\s*'([\d.]+)'")
+
+
+def _netbox_tested_versions() -> list[str]:
+    """NetBox versions from the CI integration matrix, in declared order
+    (minimum -> ... -> primary target last)."""
+    text = _INTEGRATION_YML.read_text(encoding="utf-8")
+    seen, ordered = set(), []
+    for v in _MATRIX_NETBOX_RE.findall(text):
+        if v not in seen:
+            seen.add(v)
+            ordered.append(v)
+    return ordered
+
+
+def _module_version_line() -> tuple[str, str]:
+    """Return (powernetbox_series, powershell_support) from the manifest.
+    e.g. ('4.6.0.x', '5.1+ / 7+')."""
+    content = PSD1_PATH.read_text(encoding="utf-8-sig")
+    m = _PSD1_VERSION_RE.search(content)
+    series = "current"
+    if m:
+        parts = m.group(1).split(".")
+        series = ".".join(parts[:3]) + ".x" if len(parts) >= 3 else m.group(1)
+    ps = _PSD1_PSVER_RE.search(content)
+    ps_support = f"{ps.group(1)}+ / 7+" if ps else "5.1+ / 7+"
+    return series, ps_support
+
 
 def _count_public_cmdlets() -> int:
     """Count Verb-NB* entries in the FunctionsToExport block of the psd1."""
@@ -105,10 +138,28 @@ def register_homepage(env):
 
     @env.macro
     def compat_table() -> str:
-        """Hand-curated compatibility table. Update the truth in CLAUDE.md
-        when PowerNetbox compat changes."""
-        return (
+        """Compatibility table DERIVED from the CI integration matrix
+        (.github/workflows/integration.yml) and the module manifest.
+        Do not hand-edit the values here — change the CI matrix / bump
+        the manifest and this table follows automatically."""
+        header = (
             "| PowerNetbox | NetBox target | Also supports | PowerShell |\n"
-            "|---|---|---|---|\n"
-            "| 4.5.8.x | 4.5.8 | 4.3.7, 4.4.10 | 5.1+ / 7+ |"
+            "|---|---|---|---|"
         )
+        try:
+            tested = _netbox_tested_versions()
+            series, ps_support = _module_version_line()
+            if not tested:
+                raise ValueError("empty CI matrix")
+            target = tested[-1]                 # primary target = highest/last
+            also = ", ".join(tested[:-1]) or "—"
+            return f"{header}\n| {series} | {target} | {also} | {ps_support} |"
+        except Exception:
+            # Never break the docs build on a parse failure — degrade gracefully.
+            return (
+                f"{header}\n"
+                "| current | see CI matrix | see CI matrix | 5.1+ / 7+ |\n\n"
+                "*(compatibility detail: "
+                "[integration matrix]"
+                "(https://github.com/ctrl-alt-automate/PowerNetbox/blob/dev/.github/workflows/integration.yml))*"
+            )
