@@ -43,6 +43,19 @@ coverage.xml
 TestResults/
 *.trx
 
+# MkDocs build outputs
+docs-build/generated/
+docs-build/.venv/
+docs-build/.cache/
+site/
+__pycache__/
+# Generated reference docs (CI copies from docs-build/generated/reference/ before build)
+# Ignore the generated per-module subdirectories, but track the handwritten
+# files (index.md, common-parameters.md) that live directly in docs/reference/.
+# The trailing-slash glob matches only directories one level deep, so the
+# handwritten files are unaffected and any future module dir auto-ignores.
+docs/reference/*/
+
 # Dev-only files (exclude from main branch merges)
 # These files exist on dev but should NOT be merged to main:
 # - Test-ExeDevVMs.ps1
@@ -56,3 +69,5 @@ TestResults/
 # public as a community trust signal (see CLAUDE.md "Security & reviews").
 docs/superpowers/plans/
 docs/superpowers/specs/
+docs/release-notes/
+docs/architecture/internal-helpers/
