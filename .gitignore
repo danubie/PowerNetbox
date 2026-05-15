@@ -20,7 +20,9 @@ concatenated.ps1
 *.apikey
 
 # Development files (keep in dev branch only)
-.claude/
+.claude/*
+!.claude/skills/
+!.claude/skills/**
 CLAUDE.md
 Connect-DevNetbox.ps1
 .vscode/
@@ -31,6 +33,9 @@ Connect-DevNetbox.ps1
 # Build output
 PowerNetbox/
 NetboxPSv4/
+
+# Git worktrees (isolated workspaces for parallel branch work)
+.worktrees/
 
 # Test artifacts
 coverage.xml
@@ -43,3 +48,11 @@ TestResults/
 # - Test-ExeDevVMs.ps1
 # - scripts/setup-exe-dev-environment.sh
 # - .github/workflows/exe-dev-tests.yml
+
+# Internal planning and design artifacts (local-only)
+# These document in-progress work for future-Claude context but are
+# not intended for public consumption. docs/superpowers/reviews/ is
+# deliberately excluded from this ignore — security reviews remain
+# public as a community trust signal (see CLAUDE.md "Security & reviews").
+docs/superpowers/plans/
+docs/superpowers/specs/

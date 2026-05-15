@@ -12,12 +12,12 @@
   <br>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/ctrl-alt-automate/PowerNetbox" alt="License"></a>
   <a href="https://github.com/ctrl-alt-automate/PowerNetbox/actions/workflows/pssa.yml"><img src="https://github.com/ctrl-alt-automate/PowerNetbox/actions/workflows/pssa.yml/badge.svg" alt="Lint"></a>
-  <a href="https://github.com/netbox-community/netbox"><img src="https://img.shields.io/badge/Netbox-4.5.8-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgN2wxMCA1IDEwLTV6TTIgMTdsMTAgNSAxMC01TTIgMTJsMTAgNSAxMC01Ii8+PC9zdmc+" alt="Netbox Version"></a>
+  <a href="https://github.com/netbox-community/netbox"><img src="https://img.shields.io/badge/Netbox-4.6.0-blue?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgN2wxMCA1IDEwLTV6TTIgMTdsMTAgNSAxMC01TTIgMTJsMTAgNSAxMC01Ii8+PC9zdmc+" alt="Netbox Version"></a>
 </p>
 
 <p align="center">
   <b>The</b> comprehensive PowerShell module for the <a href="https://github.com/netbox-community/netbox">Netbox</a> REST API with <b>100% coverage</b>.<br>
-  Fully compatible with <b>Netbox 4.5.8</b> (supports 4.3+).
+  Fully compatible with <b>Netbox 4.6.0</b> (supports 4.3+).
 </p>
 
 ---
@@ -300,7 +300,7 @@ Import-Module PowerNetbox
 |----------|----------------|
 | PowerShell Desktop | 5.1 |
 | PowerShell Core | 7.0+ |
-| Netbox | 4.3+ (tested with 4.3.7, 4.4.10, 4.5.8) |
+| Netbox | 4.3+ (tested with 4.3.7, 4.4.10, 4.5.10, 4.6.0) |
 
 > **Version Compatibility:** See the [Compatibility Guide](docs/guides/Compatibility.md) for detailed information about supported Netbox versions and API differences.
 
@@ -322,6 +322,44 @@ We welcome contributions! Please follow these guidelines:
 3. Follow [PowerShell Practice and Style Guidelines](https://poshcode.gitbook.io/powershell-practice-and-style/)
 4. Submit a pull request against the `dev` branch
 
+See also [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
+
+## Security and privacy
+
+- **Vulnerability reporting:** see [SECURITY.md](SECURITY.md). Use GitHub
+  Security Advisories for private disclosure.
+- **Privacy policy:** see [PRIVACY.md](PRIVACY.md). Short version:
+  PowerNetbox sends requests only to the NetBox host you configure — no
+  telemetry, no analytics.
+- **Recent security reviews:** `docs/superpowers/reviews/`.
+
+## Authenticity & provenance
+
+PowerNetbox is distributed **unsigned** on PSGallery. Authenticity is
+anchored in GitHub's Sigstore-backed build-provenance attestations,
+produced automatically for every release by
+[`actions/attest-build-provenance`](https://github.com/actions/attest-build-provenance).
+
+Verify a downloaded module:
+
+```powershell
+$module = Get-Module -ListAvailable PowerNetbox |
+    Sort-Object Version -Descending |
+    Select-Object -First 1
+
+gh attestation verify $module.Path `
+    --repo ctrl-alt-automate/PowerNetbox
+```
+
+Additional trust anchors: PSGallery publisher identity
+(`ctrl-alt-automate`), signed git release tags, and the public MIT-licensed
+source at each tag.
+
+**Note on Authenticode:** PowerNetbox has no Authenticode signature, so
+`Get-AuthenticodeSignature` will report `NotSigned` — this is expected.
+An OSS code-signing certificate may be revisited if the project grows
+enough to qualify for a Foundation-backed program.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -331,6 +369,18 @@ Original copyright (c) 2018 Ben Claussen. Fork maintained by ctrl-alt-automate.
 ## Changelog
 
 Full release notes live on [GitHub Releases](https://github.com/ctrl-alt-automate/PowerNetbox/releases). Only the latest versions are detailed below; older versions are summarised for quick lookup.
+
+### v4.6.0.0 (2026-05-15)
+
+- **NetBox 4.6 compatibility** — CI matrix added `v4.6.0-5.0.1` (netbox-docker 5.0.1) and `v4.5.10-4.0.2`; dropped `v4.5.8-4.0.2`. netbox-branching plugin bumped `0.8.0 → 1.0.3`. `Verify-ValidateSetParity` against `v4.6.0` reports zero drift for endpoints currently exposed.
+- **Bug fix #414 / PR #416 — `Get-/New-/Set-NBContactAssignment` parameter rename** (Wolfgang Wagner / @danubie). `-Content_Type` was rejected by NetBox 4.x with HTTP 400; renamed to `-Object_Type` to match the API field, with `[Alias('Content_Type')]` retained for backward compat. 27 new integration tests cover full Contact / ContactRole / ContactAssignment CRUD with cascading-cleanup ordering.
+- **Feature #409 — Nullable FK params + `-Description` on `Set-NBDCIMDevice`** (Matt Karel / @mkarel). Eleven FK params now accept `$null` for clearing: `Platform`, `Tenant`, `Cluster`, `Rack`, `Position`, `Virtual_Chassis`, `VC_Priority`, `VC_Position`, `Primary_IP4`, `Primary_IP6`, `Owner`. New `-Description` parameter.
+- **Feature #401 — Enum null-clearing on `Set-NBDCIMInterface`**. Enum-typed fields (duplex, poe-mode, etc.) clearable via the empty-string sentinel.
+- **Bug fix #392 follow-up — ValidateSet expansion on RearPort/FrontPort/Cable Type**. Strictly expansive; surfaced by the parity tool's audit.
+- **Refactor — `InterfaceConnection` cmdlets removed**. The underlying endpoint was removed in NetBox 4.0; the cmdlets had been returning 404 against every supported version.
+- **Security hardening (PRs #403–#407)** — Tier 2 security review with STRIDE threat model, OWASP API Top 10 (client-side), supply-chain audit. **Fixes pagination `.next` URL SSRF** via origin validation. Adds gitleaks CI, SECURITY.md, PRIVACY.md, dependabot for github-actions, and `actions/attest-build-provenance@v2` integration — **every PSGallery release from this version onwards ships with a cryptographic build-provenance attestation** verifiable via `gh attestation verify`.
+- **New `.claude/skills/new-netbox-endpoint/SKILL.md`** (#408) — project-level reference for adding new NetBox endpoints. Auto-loaded by Claude Code when working on endpoint additions.
+- **Deferred to v4.6.x.x** (tracked in #395): new `VirtualMachineType` / `CableBundle` / `RackGroup` endpoints, VM `-Device` parameter with `Cluster` nullable, ASN `-Role`, `DeviceBay`/`ModuleBay.enabled`, partial tag assignment, ETag/If-Match, cursor pagination.
 
 ### v4.5.8.1 (2026-04-17)
 
