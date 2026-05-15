@@ -24,6 +24,9 @@ function Get-NBIPAMASN {
     .PARAMETER Site_Id
         Filter by site ID
 
+    .PARAMETER Role_Id
+        Filter by role ID (NetBox 4.6+)
+
     .PARAMETER Limit
         Limit the number of results
 
@@ -63,6 +66,7 @@ function Get-NBIPAMASN {
 
         Returns ASN 65001
 .NOTES
+    AddedInVersion: v4.4.10.0
     The -Brief, -Fields, and -Omit parameters are mutually exclusive.
 #>
 
@@ -99,6 +103,9 @@ function Get-NBIPAMASN {
 
         [Parameter(ParameterSetName = 'Query')]
         [uint64]$Site_Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [uint64]$Role_Id,
 
         [ValidateRange(1, 1000)]
         [uint16]$Limit,

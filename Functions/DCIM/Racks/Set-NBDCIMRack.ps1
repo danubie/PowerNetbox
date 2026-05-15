@@ -36,6 +36,14 @@ function Set-NBDCIMRack {
     .PARAMETER Rack_Type
         The rack type ID
 
+    .PARAMETER Airflow
+        The rack airflow direction (NetBox 4.6+): 'front-to-rear' or 'rear-to-front'.
+        Pass '' to clear the field server-side (sent as JSON null).
+
+    .PARAMETER Form_Factor
+        The rack form factor (NetBox 4.6+), e.g. '2-post-frame', '4-post-cabinet'.
+        Pass '' to clear the field server-side (sent as JSON null).
+
     .PARAMETER Width
         The rack width (10 or 19 inches)
 
@@ -89,6 +97,9 @@ function Set-NBDCIMRack {
 
     .EXAMPLE
         Get-NBDCIMRack -Name "Rack-01" | Set-NBDCIMRack -Status deprecated
+.NOTES
+    AddedInVersion: v4.4.10.0
+
 #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
@@ -117,6 +128,14 @@ function Set-NBDCIMRack {
         [string]$Asset_Tag,
 
         [uint64]$Rack_Type,
+
+        [AllowEmptyString()]
+        [ValidateSet('front-to-rear', 'rear-to-front', '', IgnoreCase = $true)]
+        [string]$Airflow,
+
+        [AllowEmptyString()]
+        [ValidateSet('2-post-frame', '4-post-frame', '4-post-cabinet', 'wall-frame', 'wall-frame-vertical', 'wall-cabinet', 'wall-cabinet-vertical', '', IgnoreCase = $true)]
+        [string]$Form_Factor,
 
         [ValidateSet(10, 19, 21, 23)]
         [uint16]$Width,
@@ -162,6 +181,16 @@ function Set-NBDCIMRack {
 
     process {
         Write-Verbose "Updating DCIM Rack"
+
+        # Translate '' -> $null for clearable enum params BEFORE
+        # BuildURIComponents, so the PATCH body carries JSON null
+        # (NetBox rejects "" for these nullable enum fields).
+        foreach ($p in @('Airflow', 'Form_Factor')) {
+            if ($PSBoundParameters.ContainsKey($p) -and $PSBoundParameters[$p] -eq '') {
+                $PSBoundParameters[$p] = $null
+            }
+        }
+
         foreach ($RackId in $Id) {
 
             if ($Force -or $PSCmdlet.ShouldProcess("ID $RackId", "Update rack")) {

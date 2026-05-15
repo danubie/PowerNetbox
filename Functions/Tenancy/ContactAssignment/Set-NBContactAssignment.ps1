@@ -33,6 +33,7 @@ function Set-NBContactAssignment {
         PS C:\> Set-NBContactAssignment -Id 11 -Object_Type 'dcim.location' -Object_id 10 -Contact 15 -Role 10 -Priority 'Primary'
 
     .NOTES
+    AddedInVersion: v4.4.7
         Valid object types: https://docs.netbox.dev/en/stable/features/contacts/#contacts_1
 #>
 

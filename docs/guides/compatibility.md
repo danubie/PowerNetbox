@@ -4,11 +4,17 @@ PowerNetbox is tested against multiple Netbox versions to ensure broad compatibi
 
 ## Supported Versions
 
+> The exact versions exercised in CI are shown on the
+> [home page compatibility table](../index.md#compatibility), which is
+> generated from the integration matrix. The families below describe the
+> broader support policy.
+
 | Netbox Version | Status | Notes |
 |----------------|--------|-------|
-| 4.5.x | ✅ Full Support | Primary development target |
-| 4.4.x | ✅ Full Support | All 94 integration tests pass |
-| 4.3.x | ✅ Full Support | Minimum supported, all 94 tests pass |
+| 4.6.x | ✅ Full Support | Primary development target |
+| 4.5.x | ✅ Full Support | All integration tests pass |
+| 4.4.x | ✅ Full Support | All integration tests pass |
+| 4.3.x | ✅ Full Support | Minimum supported, all integration tests pass |
 | 4.2.x | ❌ Not Supported | Use PowerNetbox v4.4.10.0 or earlier |
 | 4.1.x | ❌ Not Supported | Use PowerNetbox v4.4.10.0 or earlier |
 | 4.0.x | ❌ Not Supported | Use PowerNetbox v4.4.10.0 or earlier |

@@ -33,6 +33,12 @@ function New-NBDCIMRack {
     .PARAMETER Rack_Type
         The rack type ID
 
+    .PARAMETER Airflow
+        The rack airflow direction (NetBox 4.6+): 'front-to-rear' or 'rear-to-front'.
+
+    .PARAMETER Form_Factor
+        The rack form factor (NetBox 4.6+), e.g. '2-post-frame', '4-post-cabinet', 'wall-cabinet'.
+
     .PARAMETER Width
         The rack width (10 or 19 inches)
 
@@ -90,6 +96,9 @@ function New-NBDCIMRack {
         New-NBDCIMRack -Name "Rack-02" -Site 1 -U_Height 48 -Status active
 
         Creates a 48U active rack at site 1
+.NOTES
+    AddedInVersion: v4.4.10.0
+
 #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Low')]
@@ -117,6 +126,12 @@ function New-NBDCIMRack {
         [string]$Asset_Tag,
 
         [uint64]$Rack_Type,
+
+        [ValidateSet('front-to-rear', 'rear-to-front', IgnoreCase = $true)]
+        [string]$Airflow,
+
+        [ValidateSet('2-post-frame', '4-post-frame', '4-post-cabinet', 'wall-frame', 'wall-frame-vertical', 'wall-cabinet', 'wall-cabinet-vertical', IgnoreCase = $true)]
+        [string]$Form_Factor,
 
         [ValidateSet(10, 19, 21, 23)]
         [uint16]$Width,

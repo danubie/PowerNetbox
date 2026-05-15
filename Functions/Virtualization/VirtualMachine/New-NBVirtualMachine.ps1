@@ -19,6 +19,13 @@
 .PARAMETER Cluster
     The cluster ID. Optional - VMs can be standalone in Netbox 4.x.
 
+.PARAMETER Device
+    The device ID to attach this VM to (NetBox 4.6+). Allows a clusterless,
+    device-bound VM.
+
+.PARAMETER Virtual_Machine_Type
+    The virtual machine type ID (NetBox 4.6+).
+
 .PARAMETER Tenant
     The tenant ID.
 
@@ -92,6 +99,9 @@
 
 .LINK
     https://netbox.readthedocs.io/en/stable/models/virtualization/virtualmachine/
+.NOTES
+    AddedInVersion: v1.0.4
+
 #>
 
 function New-NBVirtualMachine {
@@ -110,6 +120,12 @@ function New-NBVirtualMachine {
 
         [Parameter(ParameterSetName = 'Single')]
         [uint64]$Cluster,
+
+        [Parameter(ParameterSetName = 'Single')]
+        [uint64]$Device,
+
+        [Parameter(ParameterSetName = 'Single')]
+        [uint64]$Virtual_Machine_Type,
 
         [Parameter(ParameterSetName = 'Single')]
         [uint64]$Tenant,

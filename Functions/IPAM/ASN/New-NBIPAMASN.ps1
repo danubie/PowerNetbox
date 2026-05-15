@@ -15,6 +15,9 @@ function New-NBIPAMASN {
     .PARAMETER Tenant
         The tenant ID
 
+    .PARAMETER Role
+        The role ID assigned to this ASN (NetBox 4.6+)
+
     .PARAMETER Description
         A description of the ASN
 
@@ -36,6 +39,9 @@ function New-NBIPAMASN {
         New-NBIPAMASN -ASN 65001 -RIR 1 -Description "Primary ASN"
 
         Creates ASN 65001 with RIR and description
+.NOTES
+    AddedInVersion: v4.4.10.0
+
 #>
 
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Low')]
@@ -49,6 +55,8 @@ function New-NBIPAMASN {
         [uint64]$RIR,
 
         [uint64]$Tenant,
+
+        [uint64]$Role,
 
         [string]$Description,
 
