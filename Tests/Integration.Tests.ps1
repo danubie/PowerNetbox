@@ -1272,10 +1272,20 @@ Describe "Live Integration Tests" -Tag 'Integration', 'Live' -Skip:(-not $script
     }
 
     Context "Contact Assignment CRUD" {
-        BeforeAll {}
+        BeforeAll {
+            # Create a dedicated site for assignment tests — the earlier "DCIM Sites CRUD"
+            # context deletes its site at the end, so $script:TestSiteId points at a
+            # now-deleted object once we get here.
+            $script:AssignmentSiteName = "$($script:TestPrefix)-AssignmentSite"
+            $script:AssignmentSiteSlug = $script:AssignmentSiteName.ToLower() -replace '[^a-z0-9-]', '-'
+
+            $assignmentSite = New-NBDCIMSite -Name $script:AssignmentSiteName -Slug $script:AssignmentSiteSlug -Status 'active'
+            $script:AssignmentSiteId = $assignmentSite.id
+            [void]$script:CreatedResources.Sites.Add($assignmentSite.id)
+        }
 
         It "Should create a contact assignment to a site" {
-            $assignment = New-NBContactAssignment -Object_Type 'dcim.site' -Object_Id $script:TestSiteId -Contact $script:TestContactId -Role $script:TestContactRoleId
+            $assignment = New-NBContactAssignment -Object_Type 'dcim.site' -Object_Id $script:AssignmentSiteId -Contact $script:TestContactId -Role $script:TestContactRoleId
 
             $assignment | Should -Not -BeNullOrEmpty
             $assignment.contact.id | Should -Be $script:TestContactId
@@ -1307,7 +1317,7 @@ Describe "Live Integration Tests" -Tag 'Integration', 'Live' -Skip:(-not $script
         }
 
         It "Should get contact assignment by Object_ID" {
-            $assignment = Get-NBContactAssignment -Object_Id $script:TestSiteId
+            $assignment = Get-NBContactAssignment -Object_Id $script:AssignmentSiteId
 
             $assignment | Should -Not -BeNullOrEmpty
             $assignment.id | Should -Be $script:TestContactAssignmentId
