@@ -21,11 +21,9 @@
 function Set-NBQueryOption {
     [CmdletBinding(ConfirmImpact = 'Low',
         SupportsShouldProcess = $true)]
-    [OutputType([string])]
+    [OutputType([boolean])]
     param
     (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
         [switch]$IgnoreCase
     )
 

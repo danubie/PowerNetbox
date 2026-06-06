@@ -34,7 +34,7 @@ Describe "Code Quality Tests" -Tag 'Quality' {
             $setupFunctions = @(
                 'Set-NBCredential', 'Set-NBHostName', 'Set-NBHostPort',
                 'Set-NBHostScheme', 'Set-NBInvokeParams', 'Set-NBTimeout',
-                'Set-NBCipherSSL', 'Set-NBuntrustedSSL', 'Set-NBQueryOptions'
+                'Set-NBCipherSSL', 'Set-NBuntrustedSSL', 'Set-NBQueryOption'
             )
             $stateChangingFunctions = $script:PublicFunctions | Where-Object {
                 $_.Verb -in $stateChangingVerbs -and $_.Name -notin $setupFunctions

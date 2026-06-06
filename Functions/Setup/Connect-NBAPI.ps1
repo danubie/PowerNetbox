@@ -39,7 +39,7 @@ function Connect-NBAPI {
 
     .PARAMETER IgnoreCase
         When set, certain parameters will have an "_ic" suffix added to the query parameter name to indicate case-insensitive filtering
-        (e.g., ?name_ic=value). Only applies to parameters that support this in the API.
+        (e.g., ?name_ie=value). Only applies to parameters that support this in the API.
         The list of parameters that will be modified is defined in the $Script:IgnoreCaseParameterList
 
     .EXAMPLE

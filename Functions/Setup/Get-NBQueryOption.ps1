@@ -20,7 +20,7 @@ function Get-NBQueryOption {
 
     Write-Verbose "Getting Netbox Query Options"
     if ($null -eq $script:NetboxConfig.IgnoreCaseInQueries) {
-        throw "Netbox Query Options are not set! You may set them with Set-NBQueryOptions"
+        throw "Netbox Query Options are not set! You may set them with Set-NBQueryOption"
     }
 
     [PSCustomObject]@{
