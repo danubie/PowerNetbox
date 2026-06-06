@@ -27,6 +27,7 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' {
                 $script:NetboxConfig.Hostname = 'netbox.domain.com'
                 $script:NetboxConfig.HostScheme = 'https'
                 $script:NetboxConfig.HostPort = 443
+                $script:NetboxConfig.IgnoreCaseInQueries = $false
             }
         }
 
@@ -105,6 +106,29 @@ Describe "Helpers tests" -Tag 'Core', 'Helpers' {
                 $URIBuilder = BuildNewURI -Segments 'seg1', 'seg2' -Parameters $URIParameters -SkipConnectedCheck
                 $URIBuilder.Query | Should -Match '(?=.*param2=val1)(?=.*param2=val2)(?=.*param2=val3%20having%20spaces)'
                 $URIBuilder.URI.AbsoluteURI | Should -Match 'https://netbox.domain.com/api/seg1/seg2/\?(?=.*param1=paramval1)(?=.*param2=val1)(?=.*param2=val2)(?=.*param2=val3%20having%20spaces)'
+            }
+        }
+
+        Context 'Build case insensitive query parameters' {
+            BeforeAll {
+                $null = Set-NBQueryOption -IgnoreCase
+            }
+            AfterAll {
+                $null = Set-NBQueryOption -IgnoreCase:$false
+            }
+            It "Should ignore caseing for parameters of type string" {
+                InModuleScope -ModuleName 'PowerNetbox' {
+
+                    $Script:NetboxConfig.IgnoreCaseInQueries = $true                 # can be set by Connect-NBAPI
+                    $Script:IgnoreCaseParameterHash['name'] = $true
+                    $URIParameters = @{
+                        'name' = 'NameValue'
+                    }
+
+                    $URIBuilder = BuildNewURI -Segments 'seg1', 'seg2' -Parameters $URIParameters -SkipConnectedCheck
+                    $URIBuilder.Query | Should -Match 'name__ie=NameValue'
+                    $URIBuilder.URI.AbsoluteURI | Should -Match 'https://netbox.domain.com/api/seg1/seg2/\?name__ie=NameValue'
+                }
             }
         }
     }

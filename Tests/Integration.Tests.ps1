@@ -1371,6 +1371,7 @@ Describe "Live Integration Tests" -Tag 'Integration', 'Live' -Skip:(-not $script
                 $script:CreatedResources.ContactGroups.Remove($Script:TestContactGroup2Id)
                 $Script:TestContactGroup2Id = $null
             }
+            $null = Set-NBQueryOption -IgnoreCase:$false
         }
 
         It "Should create a contact" {
@@ -1440,6 +1441,14 @@ Describe "Live Integration Tests" -Tag 'Integration', 'Live' -Skip:(-not $script
             #Cleanup: delete contact
             { Remove-NBContact -Id $contact2.id -Confirm:$false  } | Should -Not -Throw
             $script:CreatedResources.Contacts.Remove($contact2.id)
+        }
+        It "Should find contact name using case-insensitive search" {
+            $null = Set-NBQueryOption -IgnoreCase
+            $contact = Get-NBContact -Name $script:TestContactName.ToUpper()
+
+            $contact | Should -Not -BeNullOrEmpty
+            $contact.id | Should -Be $script:TestContactId
+            $contact.name | Should -Be $script:TestContactName
         }
     }
 

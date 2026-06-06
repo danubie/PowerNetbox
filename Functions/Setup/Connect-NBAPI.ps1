@@ -37,12 +37,23 @@ function Connect-NBAPI {
     .PARAMETER TimeoutSeconds
         The number of seconds before the HTTP call times out. Defaults to 30 seconds
 
+    .PARAMETER IgnoreCase
+        When set, certain parameters will have an "_ic" suffix added to the query parameter name to indicate case-insensitive filtering
+        (e.g., ?name_ic=value). Only applies to parameters that support this in the API.
+        The list of parameters that will be modified is defined in the $Script:IgnoreCaseParameterList
+
     .EXAMPLE
         PS C:\> Connect-NBAPI -Hostname "netbox.domain.com"
 
         This will prompt for Credential, then proceed to attempt a connection to Netbox
-.NOTES
-    AddedInVersion: v1.0.4
+
+    .EXAMPLE
+        PS C:\> Connect-NBAPI -Hostname "netbox.domain.com" -IgnoreCase
+
+        This will prompt for Credential, then proceed to attempt a connection to Netbox with case-insensitive query parameters enabled
+
+    .NOTES
+        AddedInVersion: v1.0.4
 
 
 #>
@@ -141,6 +152,7 @@ function Connect-NBAPI {
     $null = Set-NBHostPort -Port $uriBuilder.Port
     $null = Set-NBInvokeParams -invokeParams $invokeParams
     $null = Set-NBTimeout -TimeoutSeconds $TimeoutSeconds
+    $null = Set-NBQueryOption -IgnoreCase:$IgnoreCase
 
     try {
         Write-Verbose "Verifying API connectivity..."

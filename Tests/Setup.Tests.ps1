@@ -285,6 +285,28 @@ Describe "Setup tests" -Tag 'Core', 'Setup' {
         }
     }
 
+    Context "Query options" {
+        It "Should set and get query option IgnoreCase" {
+            Set-NBQueryOption -IgnoreCase:$true | Should -Be $true
+            $options = Get-NBQueryOption
+            $options.Name | Should -Be "IgnoreCase"
+            $options.Value | Should -Be $true
+            $optionsInternal = InModuleScope -ModuleName 'PowerNetbox' {
+                $script:NetboxConfig.IgnoreCaseInQueries
+            }
+            $optionsInternal | Should -Be $true
+
+            Set-NBQueryOption -IgnoreCase:$false | Should -Be $false
+            $options = Get-NBQueryOption
+            $options.Name | Should -Be "IgnoreCase"
+            $options.Value | Should -Be $false
+            $optionsInternal = InModuleScope -ModuleName 'PowerNetbox' {
+                $script:NetboxConfig.IgnoreCaseInQueries
+            }
+            $optionsInternal | Should -Be $false
+        }
+    }
+
     Context "Test-NBAuthentication Not Connected" {
         It "Should return false when not connected to Netbox" {
             Mock -CommandName 'CheckNetboxIsConnected' -ModuleName 'PowerNetbox' -MockWith {

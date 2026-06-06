@@ -70,9 +70,14 @@ function BuildNewURI {
 
         foreach ($param in $Parameters.GetEnumerator()) {
             # Handle array values by repeating the key for each value (e.g., ?key=value1&key=value2)
-            $EncodedKey = [System.Uri]::EscapeDataString($param.Key)
+            if ($Script:NetboxConfig.IgnoreCaseInQueries -and $Script:IgnoreCaseParameterHash.ContainsKey($param.Key)) {
+                $paramKey = "$($param.Key)__ie"
+            } else {
+                $paramKey = $param.Key
+            }
+            $EncodedKey = [System.Uri]::EscapeDataString($paramKey)
             foreach ($thisValue in $param.Value) {
-                Write-Verbose " Adding URI parameter $($param.Key):$thisValue"
+                Write-Verbose " Adding URI parameter $($paramKey):$thisValue"
                 # URL encode key and value using .NET Uri class (available everywhere)
                 $EncodedValue = [System.Uri]::EscapeDataString([string]$thisValue)
                 $QueryParts.Add("$EncodedKey=$EncodedValue")
