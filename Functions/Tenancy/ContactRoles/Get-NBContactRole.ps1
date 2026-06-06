@@ -71,7 +71,7 @@ function Get-NBContactRole {
 
         [Parameter(ParameterSetName = 'Query',
                    Position = 0)]
-        [string]$Name,
+        [string[]]$Name,
 
         [Parameter(ParameterSetName = 'ByID', ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
@@ -80,10 +80,10 @@ function Get-NBContactRole {
         [string]$Query,
 
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
+        [string[]]$Slug,
 
         [Parameter(ParameterSetName = 'Query')]
-        [string]$Description,
+        [string[]]$Description,
 
         [ValidateRange(1, 1000)]
         [uint16]$Limit,
