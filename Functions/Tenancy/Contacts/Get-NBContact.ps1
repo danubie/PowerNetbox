@@ -109,6 +109,7 @@ function Get-NBContact {
         [string[]]$Address,
 
         [Parameter(ParameterSetName = 'Query')]
+        [Alias('Groups','GroupNames')]
         [string[]]$Group,
 
         [Parameter(ParameterSetName = 'Query')]
