@@ -90,7 +90,7 @@ function Get-NBContactAssignment {
 
         [Parameter(ParameterSetName = 'Query')]
         [Alias('Content_Type_Id')]
-        [uint64[]]$Object_Type_Id,
+        [uint64]$Object_Type_Id,
 
         [Parameter(ParameterSetName = 'Query')]
         [Alias('Content_Type')]
